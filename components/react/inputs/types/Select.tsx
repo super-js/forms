@@ -1,10 +1,9 @@
 import * as React               from "react";
 import {Select }                from 'antd';
+import {Icon} from "@super-js/components/src/icon";
+
 import SelectCss                from "./Select.css";
-
-
 import {InputComponentProps}    from "../index";
-import {Icon} from "../../icon";
 
 export interface SelectProps extends InputComponentProps {
     multiple?   : boolean;

@@ -166,7 +166,9 @@ export class Input extends React.Component<InputProps, InputState> {
 
         return (
             <div className={InputCss.input}>
-                {label ? <Typography.Text type={hasError ? "danger" : "secondary"} className={InputCss.label}>{label}</Typography.Text> : null}
+                {label ?
+                    <Typography.Text type={hasError ? "danger" : "secondary"} className={InputCss.label}>{label}</Typography.Text> : null
+                }
                 <Component
                     onInput={this.onInput}
                     onChange={this.onChange}

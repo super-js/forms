@@ -1,9 +1,9 @@
 import * as React from "react";
-import cx from "classnames";
+import {Icon} from "@super-js/components/src/icon";
 import { Input } from "antd";
 
 import {InputComponentProps} from "../index";
-import {Icon} from "../../icon";
+
 
 export interface TextProps extends InputComponentProps {
     isPassword?         : boolean;

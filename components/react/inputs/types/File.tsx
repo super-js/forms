@@ -1,9 +1,8 @@
 import * as React from "react";
 import { Upload, Typography } from 'antd';
+import {Icon} from "@super-js/components/src/icon";
 
 import {InputComponentProps} from "../index";
-import {Icon} from "../../icon";
-
 import FileCss from "./File.css";
 
 export interface FileProps extends InputComponentProps {
