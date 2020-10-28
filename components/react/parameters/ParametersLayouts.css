@@ -1,0 +1,11 @@
+.heading {
+    & > div.title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    & > div[role="separator"] {
+        margin-top: 2px !important;
+    }
+}

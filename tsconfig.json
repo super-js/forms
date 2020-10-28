@@ -1,0 +1,19 @@
+{
+  "compilerOptions"       : {
+    "target"                         : "esnext",
+    "module"                         : "esnext",
+    "moduleResolution"               : "node",
+    "sourceMap"                      : true,
+    "jsx"                            : "react",
+    "declaration"                    : true,
+    "plugins"                        : [
+      {
+        "name": "typescript-plugin-css-modules",
+        "customMatcher": "\\.css$"
+      }
+    ]
+  },
+  "include": [
+    "components/**/*"
+  ]
+}
