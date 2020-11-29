@@ -6,6 +6,7 @@ import {InputComponentProps} from "../index";
 import FileCss from "./File.css";
 
 export interface FileProps extends InputComponentProps {
+    multiple?: boolean;
 }
 
 
@@ -17,7 +18,7 @@ const File = (props: FileProps) => {
 
     return (
         <Upload.Dragger
-            multiple={false}
+            multiple={props.multiple}
             action={null}
             fileList={value ? [value] : []}
             beforeUpload={(file, fileList) => {
@@ -37,4 +38,6 @@ const File = (props: FileProps) => {
     )
 };
 
-export default File;
+File.Multiple = (props: FileProps) => <File {...props} multiple />
+
+export {File};

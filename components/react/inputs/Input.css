@@ -2,16 +2,13 @@
 
     margin: 0 0 10px 0;
 
-    & > .label {
-        display: block;
-    }
-
     & > ul.helpList {
         padding: 5px 0 0 5px;
         list-style-type: none;
 
         & > li {
             & svg {
+
                 margin-right: 5px;
             }
         }

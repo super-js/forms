@@ -1,0 +1,23 @@
+div.inputListWrapper {
+
+    & div.inputListBody {
+
+        max-height: 250px;
+        overflow-y: auto;
+
+
+        & div.list {
+            & li.listItem {
+                padding: 2px !important;
+
+                & h4 {
+                    font-weight: 400 !important;
+                }
+            }
+        }
+    }
+
+
+}
+
+

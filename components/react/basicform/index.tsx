@@ -16,7 +16,7 @@ import {IParametersLayout} from "../parameters/ParametersLayouts";
 import BasicFormCss from './BasicForm.css';
 
 export interface BasicFormProps {
-    title?              : string,
+    title?              : string | JSX.Element,
     fullHeight?         : boolean,
     description?        : string,
     iconName?           : IconName,
@@ -116,6 +116,13 @@ export class BasicForm extends React.Component<BasicFormProps, BasicFormState> {
             try {
                 success = await this.props.onSubmit(parametersValues);
             } catch(err) {
+
+                if(err.validationErrors && Object.keys(err.validationErrors).length > 0) {
+                    err.validationErrors = Object.keys(err.validationErrors).map(fieldName => (
+                        `${fieldName} - ${err.validationErrors[fieldName].join(',')}`
+                    ))
+                }
+
                 errors = Array.isArray(err.validationErrors) && err.validationErrors.length > 0 ?
                     err.validationErrors : [err.message];
             } finally {

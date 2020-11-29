@@ -7,6 +7,7 @@ import {InputComponentProps}    from "../index";
 
 export interface SelectProps extends InputComponentProps {
     multiple?   : boolean;
+    allowCreate?: boolean;
 }
 
 const NoOptionsFound = () => (
@@ -21,52 +22,34 @@ function InputSelect(props: SelectProps) {
     const {onInput, validValues = [], value, multiple} = props;
 
     const [_validValues, setValidValues] = React.useState(Array.isArray(validValues) ? validValues : []);
-    const [_loadingValidValues, setLoadingValidValues] = React.useState(false);
+    const [_loadingValidValues, setLoadingValidValues] = React.useState(typeof validValues === "function");
 
-    const getValidValues = async search => {
-        if(typeof validValues === "function") {
-            setLoadingValidValues(true);
-            try {
-                const _ = await validValues(search);
-                setValidValues(_);
-            } catch(err) {
-                console.error(err);
+    React.useEffect(() => {
+        (async () => {
+            if(typeof validValues === "function") {
+                const loadedValidValues = await validValues();
+                setValidValues(loadedValidValues);
+                setLoadingValidValues(false);
             }
-            setLoadingValidValues(false);
-        }
-    }
-
-    // let _filteredValidValues;
-    //
-    // if(multiple) {
-    //     if(Array.isArray(value) && value.length > 0) {
-    //         _filteredValidValues = validValues.filter(validValue =>
-    //             !value.some(v => v === validValue.value)
-    //         );
-    //     }
-    // }
-    //
-    // if(!_filteredValidValues) _filteredValidValues = validValues;
+        })();
+    }, [validValues])
 
     return (
         <Select
-            mode={multiple ? "tags" : null}
+            mode={multiple ? "multiple" : null}
             allowClear
             showSearch
-            onChange={async (value, option) => {
-                await onInput(value);
-            }}
-            value={value}
+            onChange={onInput}
+            value={multiple && !value ? [] : value}
             className={SelectCss.select}
-            notFoundContent={null}
-            onSearch={typeof validValues === "function" ? getValidValues : null}
+            notFoundContent={_loadingValidValues ? <Icon.Spinner /> : null}
             optionFilterProp="label"
             optionLabelProp="label"
             loading={_loadingValidValues}
-            suffixIcon={typeof validValues === "function" ? <span></span> : undefined}
+            suffixIcon={_loadingValidValues ? <Icon.Spinner /> : null}
         >
             {_validValues.map(validValue => (
-                <Select.Option key={validValue.value} className={SelectCss.option} value={validValue.label} label={validValue.label}>
+                <Select.Option key={validValue.value} className={SelectCss.option} value={validValue.value} label={validValue.label || validValue.value}>
                     {validValue.label ? validValue.label : validValue.value}
                 </Select.Option>
             ))}

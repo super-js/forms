@@ -6,14 +6,16 @@ import {IParameterType, parameterTypes, IParameterHandler, validator} from "../.
 import InputCss from "./Input.css";
 
 import {Text}             from './types/Text';
+import {InputList}               from './types/List';
 import Number           from './types/Number';
 import InputRadio       from './types/Radio';
 import InputSelect      from './types/Select';
 import InputRate        from './types/Rate';
 import DateTime         from './types/DateTime';
-import File             from './types/file';
+import {File}             from './types/file';
 
 import {ValidationResult, ValidationStatus} from "../../parameters/validator";
+import {InputHeading} from "./InputHeading";
 
 export type InputType = keyof typeof InputTypes;
 
@@ -22,11 +24,11 @@ export interface IInputValidValue {
     value       : any | any[];
 }
 
-export type InputValidValues            = IInputValidValue[];
-export type GetInputValidValues         = (searchText: string) => Promise<InputValidValues>;
+export type InputValidValues            = IInputValidValue[] | (() => Promise<IInputValidValue[]>);
 
 export interface IInputBasicProps extends Omit<IParameterHandler, 'code' | 'parameterType'> {
     label? : string;
+    description?: string;
     inputType : InputType;
     readOnly? : boolean;
     validValues? : InputValidValues;
@@ -37,10 +39,10 @@ export interface IInputBasicProps extends Omit<IParameterHandler, 'code' | 'para
 export interface InputComponentProps {
     onInput         : (value: any) => void;
     onChange        : (ev?: React.SyntheticEvent) => void;
-    hasError        : boolean;
+    hasError?       : boolean;
     value?          : any;
     readOnly?       : boolean;
-    validValues?    : InputValidValues | GetInputValidValues;
+    validValues?    : InputValidValues;
 }
 
 export interface InputProps extends IInputBasicProps {
@@ -62,6 +64,11 @@ export const InputTypes = {
     phone: parameterTypes.text,
     email: parameterTypes.email,
     password: parameterTypes.password,
+    select: parameterTypes.text,
+    multiSelect: parameterTypes.array,
+    list: parameterTypes.array,
+    file: parameterTypes.file,
+    multiFile: parameterTypes.array
 }
 
 export class Input extends React.Component<InputProps, InputState> {
@@ -71,6 +78,11 @@ export class Input extends React.Component<InputProps, InputState> {
     static PASSWORD = (props: InputProps) => <Input Component={Text.Password} parameterType={InputTypes.password()} {...props} />;
     static TEXTAREA = (props: InputProps) => <Input Component={Text.TextArea} parameterType={InputTypes.textArea()} {...props} />;
     static PHONE = (props: InputProps) => <Input Component={Text.Phone} parameterType={InputTypes.phone()} {...props} />;
+    static SELECT = (props: InputProps) => <Input Component={InputSelect} parameterType={InputTypes.select()} {...props} />;
+    static MULTISELECT = (props: InputProps) => <Input Component={InputSelect.Multiple} parameterType={InputTypes.multiSelect()} {...props} />;
+    static LIST = (props: InputProps) => <Input Component={InputList} parameterType={InputTypes.list()} {...props} />;
+    static FILE = (props: InputProps) => <Input Component={File} parameterType={InputTypes.file()} {...props}/>;
+    static MULTIFILE = (props: InputProps) => <Input Component={File.Multiple} parameterType={InputTypes.multiFile()} {...props}/>;
 
     state = {
         value               : this.props.value ? this.props.value : "",
@@ -159,22 +171,21 @@ export class Input extends React.Component<InputProps, InputState> {
 
     render() {
 
-        const {Component, inputOptions, label} = this.props;
+        const {Component, inputOptions, label, validValues, description} = this.props;
         const {validationResult, value} = this.state;
 
         const hasError = validationResult.validateStatus === ValidationStatus.error;
 
         return (
             <div className={InputCss.input}>
-                {label ?
-                    <Typography.Text type={hasError ? "danger" : "secondary"} className={InputCss.label}>{label}</Typography.Text> : null
-                }
+                <InputHeading label={label} description={description} hasError={hasError}/>
                 <Component
                     onInput={this.onInput}
                     onChange={this.onChange}
                     hasError={hasError}
-                    {...inputOptions}
                     value={value}
+                    validValues={validValues}
+                    {...inputOptions}
                 />
                 {hasError ? (
                     <ul className={InputCss.helpList}>
@@ -193,25 +204,3 @@ export class Input extends React.Component<InputProps, InputState> {
     }
 
 }
-
-// const InputTypes: IInputTypes = {
-//     text                        : InputHOC(parameterTypes.text()        , Text),
-//     email                       : InputHOC(parameterTypes.email()       , Text.Email),
-//     password                    : InputHOC(parameterTypes.password()    , Text.Password),
-//     number                      : InputHOC(parameterTypes.number()      , Number),
-//     money                       : InputHOC(parameterTypes.number()      , Number.Money),
-//     percentage                  : InputHOC(parameterTypes.number()      , Number.Percentage),
-//     textArea                    : InputHOC(parameterTypes.text()        , Text.TextArea),
-//     radio                       : InputHOC(parameterTypes.text()        , InputRadio),
-//     singleSelect                : InputHOC(parameterTypes.text()        , InputSelect),
-//     multipleSelect              : InputHOC(parameterTypes.array()       , InputSelect.Multiple),
-//     rate                        : InputHOC(parameterTypes.number()      , InputRate),
-//     datePicker                  : InputHOC(parameterTypes.text()        , DateTime.DatePicker),
-//     dateTimePicker              : InputHOC(parameterTypes.text()        , DateTime.DateTimePicker),
-//     dateRangePicker             : InputHOC(parameterTypes.array({nonEmpty: true})       , DateTime.DateRangePicker),
-//     dateTimeRangePicker         : InputHOC(parameterTypes.array({nonEmpty: true})       , DateTime.DateTimeRangePicker),
-//     file                        : InputHOC(parameterTypes.file()        , File),
-//     phone                       : InputHOC(parameterTypes.text()        , Text.Phone),
-// };
-//
-// export default InputTypes;

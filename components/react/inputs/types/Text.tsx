@@ -14,7 +14,7 @@ export interface TextProps extends InputComponentProps {
 }
 
 const Text = (props: TextProps) => {
-    const {onInput, onChange, hasError, value, noOfRows} = props;
+    const {onInput, onChange, value, noOfRows} = props;
 
     let InputComponent;
     let customInputOptions = {} as any;
