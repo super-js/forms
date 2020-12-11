@@ -8,10 +8,10 @@ export interface IAction extends Omit<AppButtonProps, 'type' | 'loading' | 'disa
 }
 
 export interface ActionsProps {
-    primaryActions?     : IAction[],
-    secondaryActions?   : IAction[],
-    submitting          : boolean
-    hasErrors           : boolean
+    primaryActions?     : IAction[];
+    secondaryActions?   : IAction[];
+    submitting          : boolean;
+    hasErrors           : boolean;
 }
 
 const Actions = (props: ActionsProps) => {

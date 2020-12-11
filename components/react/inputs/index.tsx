@@ -12,7 +12,7 @@ import InputRadio       from './types/Radio';
 import InputSelect      from './types/Select';
 import InputRate        from './types/Rate';
 import DateTime         from './types/DateTime';
-import {File}             from './types/file';
+import {InputFile}             from './types/InputFile';
 
 import {ValidationResult, ValidationStatus} from "../../parameters/validator";
 import {InputHeading} from "./InputHeading";
@@ -81,8 +81,8 @@ export class Input extends React.Component<InputProps, InputState> {
     static SELECT = (props: InputProps) => <Input Component={InputSelect} parameterType={InputTypes.select()} {...props} />;
     static MULTISELECT = (props: InputProps) => <Input Component={InputSelect.Multiple} parameterType={InputTypes.multiSelect()} {...props} />;
     static LIST = (props: InputProps) => <Input Component={InputList} parameterType={InputTypes.list()} {...props} />;
-    static FILE = (props: InputProps) => <Input Component={File} parameterType={InputTypes.file()} {...props}/>;
-    static MULTIFILE = (props: InputProps) => <Input Component={File.Multiple} parameterType={InputTypes.multiFile()} {...props}/>;
+    static FILE = (props: InputProps) => <Input Component={InputFile} parameterType={InputTypes.file()} {...props}/>;
+    static MULTIFILE = (props: InputProps) => <Input Component={InputFile.Multiple} parameterType={InputTypes.multiFile()} {...props}/>;
 
     state = {
         value               : this.props.value ? this.props.value : "",

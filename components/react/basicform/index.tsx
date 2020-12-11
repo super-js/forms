@@ -15,6 +15,11 @@ import {IParametersLayout} from "../parameters/ParametersLayouts";
 
 import BasicFormCss from './BasicForm.css';
 
+export interface IOnSubmitResult {
+    successMsg?: string;
+    parameterValues?: { [paramCode: string]: any };
+}
+
 export interface BasicFormProps {
     title?              : string | JSX.Element,
     fullHeight?         : boolean,
@@ -25,7 +30,7 @@ export interface BasicFormProps {
     secondaryActions?   : IAction[],
     info?               : string,
     warning?            : string,
-    onSubmit?           : (parameters: any) => Promise<any>;
+    onSubmit?           : (parameters: any) => Promise<IOnSubmitResult> | Promise<any>;
     clearValuesAfterSubmit?: boolean;
     onExit?             : () => void;
     layouts?            : IParametersLayout[];
@@ -75,7 +80,7 @@ export class BasicForm extends React.Component<BasicFormProps, BasicFormState> {
         const {parameters} = this.state;
         const parameterCodes = Object.keys(parameters);
 
-        let parametersValues          = {}, success = "";
+        let parametersValues          = {}, success = "", onSubmitted;
 
         const {
             hasErrors, validatedParameters
@@ -114,7 +119,7 @@ export class BasicForm extends React.Component<BasicFormProps, BasicFormState> {
             let errors = [];
 
             try {
-                success = await this.props.onSubmit(parametersValues);
+                onSubmitted = (await this.props.onSubmit(parametersValues)) || {};
             } catch(err) {
 
                 if(err.validationErrors && Object.keys(err.validationErrors).length > 0) {
@@ -128,10 +133,16 @@ export class BasicForm extends React.Component<BasicFormProps, BasicFormState> {
             } finally {
 
                 if(!this._unMounted) {
-                    let afterSubmitState = {submitting : false, errors, success: typeof success === "string" ? success : ""};
 
-                    if(this.props.clearValuesAfterSubmit
-                        && errors.length === 0) {
+                    const {successMsg, parameterValues = {}} = onSubmitted;
+
+                    let afterSubmitState = {
+                        submitting : false,
+                        errors,
+                        success: successMsg && typeof successMsg === "string" ? successMsg : ""
+                    };
+
+                    if(this.props.clearValuesAfterSubmit && errors.length === 0) {
 
                         afterSubmitState["parameters"] = Object.keys(parameters).reduce((_, parameterCode) => {
                             _[parameterCode] = {
@@ -141,6 +152,17 @@ export class BasicForm extends React.Component<BasicFormProps, BasicFormState> {
                             return _;
                         }, {});
 
+                    } else if(parameterValues && Object.keys(parameterValues).length > 0) {
+                        afterSubmitState["parameters"] = Object.keys(parameters).reduce((_, parameterCode) => {
+
+                            _[parameterCode] = !parameterValues.hasOwnProperty(parameterCode) ?
+                                parameters[parameterCode] : {
+                                    ...parameters[parameterCode],
+                                    value: parameterValues[parameterCode]
+                                }
+
+                            return _;
+                        }, {});
                     }
 
                     this.setState(afterSubmitState);

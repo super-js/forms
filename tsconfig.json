@@ -2,10 +2,10 @@
   "compilerOptions"       : {
     "target"                         : "esnext",
     "module"                         : "esnext",
+    "outDir"                         : "./lib/",
     "moduleResolution"               : "node",
     "sourceMap"                      : true,
     "jsx"                            : "react",
-    "declaration"                    : true,
     "allowSyntheticDefaultImports"   : true,
     "plugins"                        : [
       {
@@ -15,6 +15,7 @@
     ]
   },
   "include": [
+    "src/**/*",
     "components/**/*"
   ]
 }
