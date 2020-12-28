@@ -24,7 +24,8 @@
     "classnames": "^2.2.6",
     "lodash": "^4.17.20",
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "validator": "^13.5.2"
   },
   "peerDependenciesMeta" : {
     "@super-js/components": {
@@ -44,12 +45,14 @@
     },
     "react-dom": {
       "optional": true
+    },
+    "validator": {
+      "optional": true
     }
   },
   "dependencies": {
     "array-move": "^3.0.1",
     "owasp-password-strength-test": "^1.3.0",
-    "react-sortable-hoc": "^1.11.0",
-    "validator": "^13.5.2"
+    "react-sortable-hoc": "^1.11.0"
   }
 }
