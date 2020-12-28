@@ -13,6 +13,17 @@ div.inputListWrapper {
                 & h4 {
                     font-weight: 400 !important;
                 }
+
+
+                &.isNew {
+                    background: #f6ffed;
+                    border: 1px solid #d9f7be;
+                }
+
+                &.toRemove {
+                    background: #fff1f0;
+                    border: 1px solid #ffccc7;
+                }
             }
         }
     }

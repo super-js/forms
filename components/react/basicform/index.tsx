@@ -119,7 +119,7 @@ export class BasicForm extends React.Component<BasicFormProps, BasicFormState> {
             let errors = [];
 
             try {
-                onSubmitted = (await this.props.onSubmit(parametersValues)) || {};
+                onSubmitted = await this.props.onSubmit(parametersValues);
             } catch(err) {
 
                 if(err.validationErrors && Object.keys(err.validationErrors).length > 0) {
@@ -134,7 +134,7 @@ export class BasicForm extends React.Component<BasicFormProps, BasicFormState> {
 
                 if(!this._unMounted) {
 
-                    const {successMsg, parameterValues = {}} = onSubmitted;
+                    const {successMsg, parameterValues = {}} = onSubmitted || {};
 
                     let afterSubmitState = {
                         submitting : false,
