@@ -1,5 +1,5 @@
 import * as React from "react";
-import {cloneDeep} from "lodash";
+import cloneDeep from "lodash-es/cloneDeep";
 import {Skeleton} from "antd";
 
 import {ValidationResult, ValidationStatus} from "../../parameters/validator";

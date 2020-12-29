@@ -6,14 +6,15 @@
   "license": "MIT",
   "private": true,
   "devDependencies": {
+    "antd": "^4.9.4",
     "@super-js/components": "git+https://razakj@github.com/super-js/components",
     "@types/classnames": "^2.2.11",
-    "@types/lodash": "^4.14.166",
+    "@types/lodash-es": "^4.17.4",
     "@types/owasp-password-strength-test": "^1.3.0",
     "@types/react": "^17.0.0",
     "@types/validator": "^13.1.2",
     "classnames": "^2.2.6",
-    "lodash": "^4.17.20",
+    "lodash-es": "^4.17.20",
     "react": "^17.0.1",
     "typescript": "^4.1.3",
     "typescript-plugin-css-modules": "^3.0.1"
@@ -22,7 +23,7 @@
     "@super-js/components": "git+https://razakj@github.com/super-js/components",
     "antd": "^4.9.4",
     "classnames": "^2.2.6",
-    "lodash": "^4.17.20",
+    "lodash-es": "^4.17.20",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "validator": "^13.5.2"
@@ -37,7 +38,7 @@
     "classnames": {
       "optional": true
     },
-    "lodash": {
+    "lodash-es": {
       "optional": true
     },
     "react": {
