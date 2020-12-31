@@ -12,6 +12,19 @@ const InputRadio = (props: RadioProps) => {
 
     const {onInput, onChange, validValues = [], value} = props;
 
+    const [_validValues, setValidValues] = React.useState(Array.isArray(validValues) ? validValues : []);
+    const [_loadingValidValues, setLoadingValidValues] = React.useState(typeof validValues === "function");
+
+    React.useEffect(() => {
+        (async () => {
+            if(typeof validValues === "function") {
+                const loadedValidValues = await validValues();
+                setValidValues(loadedValidValues);
+                setLoadingValidValues(false);
+            }
+        })();
+    }, [validValues])
+
     return (
         <Radio.Group
             onChange={ev => {
@@ -20,8 +33,9 @@ const InputRadio = (props: RadioProps) => {
             }}
             value={value}
             className={RadioCss.radioWrapper}
+            disabled={_loadingValidValues}
         >
-            {validValues.map(validValue => (
+            {_validValues.map(validValue => (
                 <Radio key={validValue.value} value={validValue.value}>{validValue.label ? validValue.label : validValue.value}</Radio>
             ))}
         </Radio.Group>

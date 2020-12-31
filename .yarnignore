@@ -1,7 +1,5 @@
 yarn.lock
-tsconfig.json
-tsconfig.dev.json
-webpack.dev.config.js
-lib/
-development/
 jest.config.js
+tsconfig.json
+lib/
+yarn-error.log

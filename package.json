@@ -2,12 +2,17 @@
   "name": "@super-js/forms",
   "version": "0.0.1",
   "repository": "https://github.com/super-js/forms",
+  "files": [
+    "lib"
+  ],
   "author": "Jakub Razak",
   "license": "MIT",
-  "private": true,
+  "scripts": {
+    "build": "npx rimraf lib/ && npx tsc && npx postcss components/**/*.css --base components --dir lib"
+  },
   "devDependencies": {
     "antd": "^4.9.4",
-    "@super-js/components": "git+https://e668e1baac78425389a6f2bdde47d32afe045b69:x-oauth-basic@github.com/super-js/components",
+    "@super-js/components": "latest",
     "@types/classnames": "^2.2.11",
     "@types/lodash-es": "^4.17.4",
     "@types/owasp-password-strength-test": "^1.3.0",
@@ -17,10 +22,14 @@
     "lodash-es": "^4.17.20",
     "react": "^17.0.1",
     "typescript": "^4.1.3",
-    "typescript-plugin-css-modules": "^3.0.1"
+    "typescript-plugin-css-modules": "^3.0.1",
+    "postcss": "^8.2.2",
+    "postcss-cli": "^8.3.1",
+    "postcss-preset-env": "^6.7.0",
+    "rimraf": "^3.0.2"
   },
   "peerDependencies": {
-    "@super-js/components": "git+https://e668e1baac78425389a6f2bdde47d32afe045b69:x-oauth-basic@github.com/super-js/components",
+    "@super-js/components": "latest",
     "antd": "^4.9.4",
     "classnames": "^2.2.6",
     "lodash-es": "^4.17.20",
