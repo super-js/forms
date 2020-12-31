@@ -1,6 +1,6 @@
 import * as React               from "react";
 import {Select }                from 'antd';
-import {Icon} from "@super-js/components/src/icon";
+import {Icon} from "@super-js/components/lib/icon";
 
 import SelectCss                from "./Select.css";
 import {InputComponentProps}    from "../index";

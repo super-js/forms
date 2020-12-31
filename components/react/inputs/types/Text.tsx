@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Icon} from "@super-js/components/src/icon";
+import {Icon} from "@super-js/components/lib/icon";
 import { Input } from "antd";
 
 import {InputComponentProps} from "../index";

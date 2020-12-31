@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Tooltip } from 'antd';
-import { Icon } from "@super-js/components/src/icon";
+import { Icon } from "@super-js/components/lib/icon";
 import InputHeadingCss from "./InputHeading.css";
 import {Typography} from "antd";
 

@@ -1,6 +1,6 @@
 import * as React from "react";
 import {Divider, Row, Col, Typography} from "antd";
-import {Icon} from "@super-js/components/src/icon";
+import {Icon} from "@super-js/components/lib/icon";
 
 import {IParameters, Parameter} from "./Parameter";
 

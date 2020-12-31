@@ -4,7 +4,7 @@ import arrayMove from 'array-move';
 import {SortableContainer, SortableElement, SortableHandle} from 'react-sortable-hoc';
 import { List, Input, Typography, Divider} from 'antd';
 
-import { Icon } from "@super-js/components/src/icon";
+import { Icon } from "@super-js/components/lib/icon";
 import {InputComponentProps} from "../index";
 import ListCss from './List.css'
 import {SyntheticEvent} from "react";

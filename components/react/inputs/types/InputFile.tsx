@@ -2,7 +2,7 @@ import * as React from "react";
 import { Upload, Typography} from 'antd';
 import cx from "classnames";
 
-import {Icon} from "@super-js/components/src/icon";
+import {Icon} from "@super-js/components/lib/icon";
 
 import {InputComponentProps} from "../index";
 import InputFileCss from "./InputFile.css";

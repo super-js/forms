@@ -1,6 +1,6 @@
 import * as React from "react";
 import {Typography} from "antd";
-import {Icon} from "@super-js/components/src/icon";
+import {Icon} from "@super-js/components/lib/icon";
 
 import {IParameterType, parameterTypes, IParameterHandler, validator} from "../../parameters";
 import InputCss from "./Input.css";

@@ -2,10 +2,10 @@ import * as React from "react";
 import cx from "classnames";
 
 import {Divider, Form} from 'antd';
-import {AppCard} from "@super-js/components/src/appcard";
-import {AppAlert} from '@super-js/components/src/appalert';
-import {IConfirmationResult, TOnConfirmation} from '@super-js/components/src/appbutton';
-import type {IconName} from '@super-js/components/src/icon';
+import {AppCard} from "@super-js/components/lib/appcard";
+import {AppAlert} from '@super-js/components/lib/appalert';
+import {IConfirmationResult, TOnConfirmation} from '@super-js/components/lib/appbutton';
+import type {IconName} from '@super-js/components/lib/icon';
 
 import Actions, {IAction} from "../actions";
 import {InputTypes} from "../inputs";

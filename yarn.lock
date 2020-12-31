@@ -122,10 +122,10 @@
     "@nodelib/fs.scandir" "2.1.4"
     fastq "^1.6.0"
 
-"@super-js/components@latest":
-  version "0.0.5"
-  resolved "https://npm.pkg.github.com/download/@super-js/components/0.0.5/daa39543dd2f9d6dd5ea08ee80c516f1ce0e72a0418862be34baf37661be4a06#4fe8ec25caf3a9bc2c72c9bacc658faa986cf622"
-  integrity sha512-4c1NFmbL5CkHvshPZxX5ZOqqe0YDS2DBoCYPrDypQ4ktgBkaQPKgyRdGf5GCRA6EfsnuC1OhBWYhrxgLbWfRTg==
+"@super-js/components@^0.0.10":
+  version "0.0.10"
+  resolved "https://npm.pkg.github.com/download/@super-js/components/0.0.10/6160810f86819dfb500cbd3b78e79db3733cec7418fc8d8b5d671970ba7035b2#cc3eb2ca8f5e3b004a02e29d84e8f0fc9517d703"
+  integrity sha512-Y7zman69v9Vrs/LPcNysPnbgne7QJYrfuMI1I44QLIr7jPW4i/C0OckCrR1mkWoAA3nNvNsjpzIMq/nBXBBbeg==
   dependencies:
     "@fortawesome/fontawesome-svg-core" "^1.2.30"
     "@fortawesome/pro-duotone-svg-icons" "^5.14.0"
