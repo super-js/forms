@@ -53,9 +53,9 @@ const DateTime = (props: DateTimeProps) => {
         <DateTimeComponent
             format={dateTimeFormat}
             value={_getDateValue()}
+            className={DateTimeCss.dateTimeComponent}
             showTime={props.includeTime ? { format: 'H:m' } : false}
             onChange={async (value, valueString) => {
-
                 await props.onInput(valueString);
                 props.onChange();
             }}

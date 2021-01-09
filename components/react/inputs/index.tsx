@@ -11,6 +11,7 @@ import Number           from './types/Number';
 import InputRadio       from './types/Radio';
 import InputSelect      from './types/Select';
 import InputRate        from './types/Rate';
+import {InputCheckbox}        from './types/Checkbox';
 import DateTime         from './types/DateTime';
 import {InputFile}             from './types/InputFile';
 
@@ -22,9 +23,12 @@ export type InputType = keyof typeof InputTypes;
 export interface IInputValidValue {
     label?      : string;
     value       : any | any[];
+    disabled?   : boolean;
+    checkable?  : boolean;
+    children?   : IInputValidValue[];
 }
 
-export type InputValidValues            = IInputValidValue[] | (() => Promise<IInputValidValue[]>);
+export type InputValidValues            = IInputValidValue[] | ((inputData?: any) => Promise<IInputValidValue[]>);
 
 export interface IInputBasicProps extends Omit<IParameterHandler, 'code' | 'parameterType'> {
     label? : string;
@@ -55,7 +59,7 @@ export interface InputProps extends IInputBasicProps {
 
 export interface InputState {
     value			    : any;
-    validationResult    : ValidationResult
+    validationResult    : ValidationResult;
 }
 
 export const InputTypes = {
@@ -66,9 +70,16 @@ export const InputTypes = {
     password: parameterTypes.password,
     select: parameterTypes.text,
     multiSelect: parameterTypes.array,
+    selectTree: parameterTypes.text,
+    multiSelectTree: parameterTypes.array,
     list: parameterTypes.array,
     file: parameterTypes.file,
-    multiFile: parameterTypes.array
+    multiFile: parameterTypes.array,
+    datePicker: parameterTypes.text,
+    dateTimePicker: parameterTypes.text,
+    dateRangePicker: parameterTypes.text,
+    dateTimeRangePicker: parameterTypes.text,
+    checkbox: parameterTypes.text
 }
 
 export class Input extends React.Component<InputProps, InputState> {
@@ -78,11 +89,22 @@ export class Input extends React.Component<InputProps, InputState> {
     static PASSWORD = (props: InputProps) => <Input Component={Text.Password} parameterType={InputTypes.password()} {...props} />;
     static TEXTAREA = (props: InputProps) => <Input Component={Text.TextArea} parameterType={InputTypes.textArea()} {...props} />;
     static PHONE = (props: InputProps) => <Input Component={Text.Phone} parameterType={InputTypes.phone()} {...props} />;
+
     static SELECT = (props: InputProps) => <Input Component={InputSelect} parameterType={InputTypes.select()} {...props} />;
     static MULTISELECT = (props: InputProps) => <Input Component={InputSelect.Multiple} parameterType={InputTypes.multiSelect()} {...props} />;
+    static SELECTTREE = (props: InputProps) => <Input Component={InputSelect.Tree} parameterType={InputTypes.selectTree()} {...props} />;
+    static MULTISELECTTREE = (props: InputProps) => <Input Component={InputSelect.TreeMultiple} parameterType={InputTypes.multiSelectTree()} {...props} />;
+
     static LIST = (props: InputProps) => <Input Component={InputList} parameterType={InputTypes.list()} {...props} />;
     static FILE = (props: InputProps) => <Input Component={InputFile} parameterType={InputTypes.file()} {...props}/>;
     static MULTIFILE = (props: InputProps) => <Input Component={InputFile.Multiple} parameterType={InputTypes.multiFile()} {...props}/>;
+
+    static DATEPICKER = (props: InputProps) => <Input Component={DateTime.DatePicker} parameterType={InputTypes.text()} {...props}/>;
+    static DATETIMEPICKER = (props: InputProps) => <Input Component={DateTime.DateTimePicker} parameterType={InputTypes.text()} {...props}/>;
+    static DATERANGEPICKER = (props: InputProps) => <Input Component={DateTime.DateRangePicker} parameterType={InputTypes.text()} {...props}/>;
+    static DATETIMERANGEPICKER = (props: InputProps) => <Input Component={DateTime.DateTimeRangePicker} parameterType={InputTypes.text()} {...props}/>;
+
+    static CHECKBOX = (props: InputProps) => <Input Component={InputCheckbox} parameterType={InputTypes.text()} {...props}/>;
 
     state = {
         value               : this.props.value ? this.props.value : "",
