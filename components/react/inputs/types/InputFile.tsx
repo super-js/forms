@@ -73,6 +73,7 @@ const InputFile = (props: InputFileProps) => {
                     return false;
                 }}
                 className={InputFileCss.wrapper}
+                disabled={props.readOnly}
                 itemRender={(node, file) => {
                     return (
                         <div className={cx(InputFileCss.file, {

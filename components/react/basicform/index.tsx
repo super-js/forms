@@ -30,11 +30,14 @@ export interface BasicFormProps {
     secondaryActions?   : IAction[],
     info?               : string,
     warning?            : string,
+    error?: string;
     onSubmit?           : (parameters: any) => Promise<IOnSubmitResult> | Promise<any>;
     clearValuesAfterSubmit?: boolean;
     onExit?             : () => void;
     layouts?            : IParametersLayout[];
     parametersAndLayoutsLoader? : () => Promise<IParametersAndLayouts>;
+    loading?: boolean;
+    readOnly?: boolean;
 }
 
 export interface BasicFormState {
@@ -66,8 +69,21 @@ export class BasicForm extends React.Component<BasicFormProps, BasicFormState> {
         || this.state.errors !== nextState.errors
         || this.state.success !== nextState.success
         || this.props.title !== nextProps.title
-        || this.state.parameters !== nextState.parameters)
+        || this.state.parameters !== nextState.parameters
+        || this.props.loading !== nextProps.loading
+        || this.props.readOnly !== nextProps.readOnly
+        || this.props.parameters !== nextProps.parameters
+        || this.props.layouts !== nextProps.layouts
+        )
         && !this._unMounted
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if(prevProps.parameters !== this.props.parameters) {
+            this.setState({
+                parameters: this.props.parameters
+            })
+        }
     }
 
     componentWillUnmount() {
@@ -186,10 +202,16 @@ export class BasicForm extends React.Component<BasicFormProps, BasicFormState> {
     render() {
 
         const {
-            title, primaryActions, description, secondaryActions, iconName, info, warning, fullHeight, onExit
+            title, primaryActions, description, secondaryActions, iconName, info, warning, fullHeight, onExit,
+            readOnly, loading, error
         } = this.props;
 
         const {submitting, hasErrors, parameters, errors, success} = this.state;
+
+        let allErrors = [
+            ...errors
+        ];
+        if(error) allErrors.push(error);
 
         return (
             <AppCard
@@ -204,8 +226,8 @@ export class BasicForm extends React.Component<BasicFormProps, BasicFormState> {
                     [BasicFormCss.fullHeight] : fullHeight
                 })} onSubmitCapture={this.onSubmit}>
                     <div className={BasicFormCss.formContent}>
-                        {Array.isArray(errors) && errors.length > 0 ? (
-                            errors.map(error => <AppAlert key={error} message={error} type="error" />)
+                        {Array.isArray(allErrors) && allErrors.length > 0 ? (
+                            allErrors.map(_error => <AppAlert key={_error} message={_error} type="error" />)
                         ) : null}
                         {success ? (
                             <AppAlert message={success} type="success" />
@@ -224,17 +246,24 @@ export class BasicForm extends React.Component<BasicFormProps, BasicFormState> {
                                 onParametersChange={this.onParametersChange}
                                 layouts={this.props.layouts}
                                 parametersAndLayoutsLoader={this.props.parametersAndLayoutsLoader}
+                                loading={loading}
+                                readOnly={readOnly}
                             />
                         </div>
                     </div>
                     <div className={BasicFormCss.formActions}>
-                        {Array.isArray(primaryActions) && primaryActions.length > 0 ? <Divider /> : null}
-                        <Actions
-                            primaryActions={primaryActions}
-                            secondaryActions={secondaryActions}
-                            submitting={submitting}
-                            hasErrors={hasErrors}
-                        />
+                        {!readOnly ? (
+                            <React.Fragment>
+                                {Array.isArray(primaryActions) && primaryActions.length > 0 ? <Divider /> : null}
+                                <Actions
+                                    primaryActions={primaryActions}
+                                    secondaryActions={secondaryActions}
+                                    submitting={submitting}
+                                    hasErrors={hasErrors}
+                                    readOnly={loading}
+                                />
+                            </React.Fragment>
+                        ) : null}
                     </div>
                 </Form>
             </AppCard>

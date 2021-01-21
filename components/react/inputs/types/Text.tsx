@@ -39,6 +39,8 @@ const Text = (props: TextProps) => {
         onInput={ev => onInput(ev.target.value)}
         onBlur={onChange}
         value={value === "undefined" ? "" : value}
+        readOnly={props.readOnly}
+        disabled={props.readOnly}
     />
 };
 

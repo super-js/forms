@@ -59,6 +59,8 @@ const DateTime = (props: DateTimeProps) => {
                 await props.onInput(valueString);
                 props.onChange();
             }}
+            readOnly={props.readOnly}
+            disabled={props.readOnly}
         />
     )
 

@@ -20,6 +20,7 @@ const InputCheckbox = (props: RateProps) => {
             className={CheckboxCss.checkbox}
             checked={isChecked}
             onChange={ev => onInput(ev.target.checked)}
+            disabled={props.readOnly}
         />
     )
 };

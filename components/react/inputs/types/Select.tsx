@@ -3,7 +3,7 @@ import {Select, TreeSelect }                from 'antd';
 import {Icon} from "@super-js/components/lib/icon";
 
 import SelectCss                from "./Select.css";
-import {IInputValidValue, InputComponentProps} from "../index";
+import {IInputValidValue, InputComponentProps, Input} from "../index";
 
 export interface InputSelectProps extends InputComponentProps {
     multiple?   : boolean;
@@ -20,39 +20,39 @@ const NoOptionsFound = () => (
 
 function InputSelect(props: InputSelectProps) {
 
-    const {onInput, validValues = [], value, multiple, tree} = props;
-
-    const [_validValues, setValidValues] = React.useState(Array.isArray(validValues) ? validValues : []);
-    const [_loadingValidValues, setLoadingValidValues] = React.useState(typeof validValues === "function");
+    const {onInput, value, multiple, tree, validValuesChildKey} = props;
     const selectValue = multiple && !value ? [] : value;
 
-    React.useEffect(() => {
-        (async () => {
-            if(typeof validValues === "function") {
-                const loadedValidValues = await validValues();
-                setValidValues(loadedValidValues);
-                setLoadingValidValues(false);
-            }
-        })();
-    }, [validValues]);
+    const {
+        validValues, loadingValidValues
+    } = Input.useValidValues(props.validValues, props.onError, validValuesChildKey);
+
 
     const renderSelect = () => (
         <Select
             mode={multiple ? "multiple" : null}
             allowClear
             showSearch
-            onChange={onInput}
+            onChange={value => onInput(value, {
+                validValues
+            })}
             value={selectValue}
             className={SelectCss.select}
-            notFoundContent={_loadingValidValues ? <Icon.Spinner /> : null}
+            notFoundContent={loadingValidValues ? <Icon.Spinner /> : null}
             optionFilterProp="label"
             optionLabelProp="label"
-            loading={_loadingValidValues}
-            suffixIcon={_loadingValidValues ? <Icon.Spinner /> : null}
+            loading={loadingValidValues}
+            suffixIcon={loadingValidValues ? <Icon.Spinner /> : null}
+            disabled={props.readOnly}
         >
-            {_validValues.map(validValue => (
-                <Select.Option key={validValue.value} className={SelectCss.option} value={validValue.value} label={validValue.label || validValue.value}>
-                    {validValue.label ? validValue.label : validValue.value}
+            {validValues.map(validValue => (
+                <Select.Option
+                    key={validValue.value}
+                    className={SelectCss.option}
+                    value={validValue.value}
+                    label={validValue.label}
+                >
+                    {validValue.label}
                 </Select.Option>
             ))}
         </Select>
@@ -65,7 +65,7 @@ function InputSelect(props: InputSelectProps) {
                 key={validValue.value}
                 value={validValue.value}
                 className={SelectCss.option}
-                title={validValue.label || validValue.value}
+                title={validValue.label}
             >
                 {Array.isArray(validValue.children) && validValue.children.length > 0 ?
                     _renderTreeNodes(validValue.children) : null
@@ -79,12 +79,18 @@ function InputSelect(props: InputSelectProps) {
                 allowClear
                 className={SelectCss.select}
                 value={selectValue}
-                onChange={onInput}
+                onChange={value => onInput(value, {
+                    validValues
+                })}
                 treeNodeFilterProp="label"
-                treeNodeLabelProp="label"
-                treeCheckable={multiple}
+                // treeCheckable={multiple}
+                multiple={multiple}
+                treeData={validValues}
+                loading={loadingValidValues}
+                treeDefaultExpandAll={true}
+                disabled={props.readOnly}
             >
-                {_renderTreeNodes(_validValues)}
+                {/*{_renderTreeNodes(validValues)}*/}
             </TreeSelect>
         )
     }

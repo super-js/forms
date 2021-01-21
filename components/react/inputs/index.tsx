@@ -22,10 +22,13 @@ export type InputType = keyof typeof InputTypes;
 
 export interface IInputValidValue {
     label?      : string;
+    name? : string;
     value       : any | any[];
+    id?: string;
     disabled?   : boolean;
     checkable?  : boolean;
     children?   : IInputValidValue[];
+    data?: any;
 }
 
 export type InputValidValues            = IInputValidValue[] | ((inputData?: any) => Promise<IInputValidValue[]>);
@@ -37,20 +40,23 @@ export interface IInputBasicProps extends Omit<IParameterHandler, 'code' | 'para
     readOnly? : boolean;
     validValues? : InputValidValues;
     validationResult? : ValidationResult;
+    validValuesChildKey?: string;
     inputOptions?: any;
 }
 
 export interface InputComponentProps {
-    onInput         : (value: any) => void;
+    onInput         : (value: any, onInputData?: any) => void;
     onChange        : (ev?: React.SyntheticEvent) => void;
     hasError?       : boolean;
     value?          : any;
     readOnly?       : boolean;
     validValues?    : InputValidValues;
+    validValuesChildKey?: string;
+    onError         : (error: Error) => void;
 }
 
 export interface InputProps extends IInputBasicProps {
-    onInput                         : (value: any) => void;
+    onInput                         : (value: any, onInputData: any) => void;
     onValidationChange?             : (validationResult: ValidationResult) => void;
     parameters?                     : validator.IOtherParameters;
     Component?: React.ComponentClass<any, any> | React.FunctionComponent<any>;
@@ -82,6 +88,8 @@ export const InputTypes = {
     checkbox: parameterTypes.text
 }
 
+export class ValidValuesError {};
+
 export class Input extends React.Component<InputProps, InputState> {
 
     static TEXT = (props: InputProps) => <Input Component={Text} parameterType={InputTypes.text()} {...props} />;
@@ -106,6 +114,47 @@ export class Input extends React.Component<InputProps, InputState> {
 
     static CHECKBOX = (props: InputProps) => <Input Component={InputCheckbox} parameterType={InputTypes.text()} {...props}/>;
 
+
+    static useValidValues = (validValues: InputValidValues, onError: Function, validValuesChildKey?: string) => {
+        const [_validValues, setValidValues] = React.useState(Array.isArray(validValues) ? validValues : []);
+        const [_loadingValidValues, setLoadingValidValues] = React.useState(typeof validValues === "function");
+
+        React.useEffect(() => {
+            (async () => {
+
+                const _normalizeValidValues = validValues => validValues.map(validValue => ({
+                    ...validValue,
+                    label: validValue.label || validValue.name || validValue.id || validValue.value,
+                    value: validValue.id || validValue.value || validValue.label || validValue.name,
+                    children: Array.isArray(validValue[validValuesChildKey || 'children']) && validValue[validValuesChildKey || 'children'].length > 0 ?
+                        _normalizeValidValues(validValue[validValuesChildKey || 'children']) : []
+                }))
+
+                if(typeof validValues === "function") {
+                    try {
+                        const loadedValidValues = await validValues();
+
+                        setValidValues(
+                            _normalizeValidValues(Array.isArray(loadedValidValues) ? loadedValidValues : [])
+                        );
+                        setLoadingValidValues(false);
+                    } catch(err) {
+                        onError(new ValidValuesError());
+                    }
+                } else {
+                    setValidValues(
+                        _normalizeValidValues(Array.isArray(validValues) ? validValues : [])
+                    );
+                }
+            })();
+        }, [validValues]);
+
+        return {
+            validValues: _validValues,
+            loadingValidValues: _loadingValidValues
+        }
+    }
+
     state = {
         value               : this.props.value ? this.props.value : "",
         validationResult    : this.props.validationResult ? this.props.validationResult : {
@@ -120,6 +169,8 @@ export class Input extends React.Component<InputProps, InputState> {
         return this.state.value !== nextState.value
             || (nextProps.value != undefined && nextProps.value !== this.state.value && nextProps.value !== this.props.value)
             || this.state.validationResult !== nextState.validationResult
+            || nextProps.readOnly !== this.props.readOnly
+            || nextProps.validValues !== this.props.validValues
             || (
                 !!nextProps.validationResult
                 && nextProps.validationResult.validateStatus !== this.state.validationResult.validateStatus
@@ -132,7 +183,6 @@ export class Input extends React.Component<InputProps, InputState> {
     }
 
     componentDidUpdate(prevProps, prevState) {
-
         let newState = {};
 
         if(this.props.validationResult
@@ -150,14 +200,33 @@ export class Input extends React.Component<InputProps, InputState> {
         if(Object.keys(newState).length > 0) this.setState(newState);
     }
 
-    onInput     = (value: any) => {
+    onInput     = (value: any, onInputData: any = {}) => {
         this.setState({
             value
         }, () => {
-            this.props.onInput(value);
+            this.props.onInput(value, onInputData);
             this._validate()
         });
     };
+
+    onError = (error) => {
+
+        let help = [];
+
+        if(error instanceof ValidValuesError) {
+            help.push(`Unable to load ${this.props.label} values`);
+        } else {
+            console.error(error);
+            help.push(error.message);
+        }
+
+        this.setState({
+            validationResult: {
+                validateStatus  : ValidationStatus.error,
+                help
+            }
+        })
+    }
 
     onChange   = () => {};
 
@@ -187,13 +256,13 @@ export class Input extends React.Component<InputProps, InputState> {
 
             }, 500);
         }
-
-
     };
+
+
 
     render() {
 
-        const {Component, inputOptions, label, validValues, description} = this.props;
+        const {Component, inputOptions, label, description, validValues, readOnly, validValuesChildKey} = this.props;
         const {validationResult, value} = this.state;
 
         const hasError = validationResult.validateStatus === ValidationStatus.error;
@@ -206,7 +275,10 @@ export class Input extends React.Component<InputProps, InputState> {
                     onChange={this.onChange}
                     hasError={hasError}
                     value={value}
+                    onError={this.onError}
                     validValues={validValues}
+                    readOnly={readOnly}
+                    validValuesChildKey={validValuesChildKey}
                     {...inputOptions}
                 />
                 {hasError ? (

@@ -22,6 +22,7 @@ const InputRate = (props: RateProps) => {
             await onInput(value === 0 ? null : value);
             onChange();
         }}
+        disabled={props.readOnly}
     />
 };
 

@@ -32,6 +32,8 @@ const Number = (props: NumberProps) => {
         onBlur={onChange}
         formatter={formatter}
         parser={parser}
+        readOnly={props.readOnly}
+        disabled={props.readOnly}
     />
 };
 

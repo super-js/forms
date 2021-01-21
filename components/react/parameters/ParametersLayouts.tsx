@@ -1,6 +1,6 @@
 import * as React from "react";
 import {Divider, Row, Col, Typography} from "antd";
-import {Icon} from "@super-js/components/lib/icon";
+import cx from "classnames";
 
 import {IParameters, Parameter} from "./Parameter";
 
@@ -26,6 +26,7 @@ export interface IParametersLayout {
 export interface IParametersLayoutsProps {
     parameters: IParameters;
     layouts?: IParametersLayout[];
+    loading?: boolean;
 }
 
 export interface IParametersLayoutProps extends IParametersLayout {
@@ -148,28 +149,40 @@ export function ParametersLayouts(props: IParametersLayoutsProps) {
 
     const layouts = props.layouts || [];
 
-    if(Array.isArray(layouts) && layouts.length > 0) {
-        return (
-            <React.Fragment>
-                {layouts
-                    .map((layout, layoutIx) => (
-                        <ParametersLayout
-                            key={layoutIx}
-                            parameters={props.parameters}
-                            {...layout}
-                        />
+    const renderLayouts = () => {
+        if(Array.isArray(layouts) && layouts.length > 0) {
+            return (
+                <React.Fragment>
+                    {layouts
+                        .map((layout, layoutIx) => (
+                            <ParametersLayout
+                                key={layoutIx}
+                                parameters={props.parameters}
+                                {...layout}
+                            />
+                        ))}
+                </React.Fragment>
+            )
+        } else {
+            return (
+                <React.Fragment>
+                    {Object.keys(props.parameters).map(parameterCode => (
+                        <Parameter
+                            key={parameterCode}
+                            {...props.parameters[parameterCode]}                    />
                     ))}
-            </React.Fragment>
-        )
-    } else {
-        return (
-            <React.Fragment>
-                {Object.keys(props.parameters).map(parameterCode => (
-                    <Parameter
-                        key={parameterCode}
-                        {...props.parameters[parameterCode]}                    />
-                ))}
-            </React.Fragment>
-        )
+                </React.Fragment>
+            )
+        }
     }
+
+
+
+    return (
+        <div className={cx({
+            [ParametersLayoutsCss.loading] : props.loading
+        })}>
+            {renderLayouts()}
+        </div>
+    )
 }

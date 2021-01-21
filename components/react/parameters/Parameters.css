@@ -1,0 +1,10 @@
+div.parameters {
+    position: relative;
+
+    & > .processing {
+        position: absolute;
+        top: 50%;
+        text-align: center;
+        left: 48%;
+    }
+}

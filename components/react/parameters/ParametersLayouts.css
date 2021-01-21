@@ -9,3 +9,7 @@
         margin-top: 2px !important;
     }
 }
+
+.loading {
+    opacity: .5;
+}

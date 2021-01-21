@@ -2,13 +2,22 @@ import * as React from "react";
 import {IInputBasicProps, Input, InputProps, InputState} from "../inputs";
 
 import ParameterCss       from "./ParameterCss.css";
-import {ParametersContext} from "./index";
+import {OnParametersChangeEventCode, ParametersContext} from "./index";
 import {ValidationResult} from "../../parameters/validator";
 
+export interface IOnParameterChangeData {
+    eventCode: OnParametersChangeEventCode;
+    parameter: IParameter;
+    parameters: IParameters;
+    data: any;
+}
+
 export type OnParameterValidationChange = (parameterCode: string, validationResult: ValidationResult) => void;
+export type OnParameterChange = (onParameterChangeData: IOnParameterChangeData) => void;
 
 export interface IParameter extends IInputBasicProps {
-    code                : string
+    code                : string;
+    onChange?           : OnParameterChange;
 }
 
 export interface IParameters {
@@ -23,7 +32,7 @@ export function Parameter(props: ParameterProps) {
     const {code, onValidationChange, inputType, ...inputProps} = props;
 
     const {
-        onParameterValidationChange, onParameterValueInput, parameters
+        onParameterValidationChange, onParameterValueInput, parameters, readOnly
     } = React.useContext(ParametersContext);
 
     const InputComponent    = inputType && Input[inputType.toUpperCase()] ?
@@ -39,9 +48,10 @@ export function Parameter(props: ParameterProps) {
 
     return (
         <InputComponent
-            onInput={value => onParameterValueInput(code, value)}
+            onInput={(value, onInputData) => onParameterValueInput(code, value, onInputData)}
             onValidationChange={_onValidationChange}
             parameters={parameters}
+            readOnly={inputProps.readOnly || readOnly}
             {...inputProps}
         />
     )

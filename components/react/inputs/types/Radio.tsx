@@ -33,7 +33,7 @@ const InputRadio = (props: RadioProps) => {
             }}
             value={value}
             className={RadioCss.radioWrapper}
-            disabled={_loadingValidValues}
+            disabled={_loadingValidValues || props.readOnly}
         >
             {_validValues.map(validValue => (
                 <Radio key={validValue.value} value={validValue.value}>{validValue.label ? validValue.label : validValue.value}</Radio>

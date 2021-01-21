@@ -12,6 +12,7 @@ export interface ActionsProps {
     secondaryActions?   : IAction[];
     submitting          : boolean;
     hasErrors           : boolean;
+    readOnly?: boolean;
 }
 
 const Actions = (props: ActionsProps) => {
@@ -25,7 +26,7 @@ const Actions = (props: ActionsProps) => {
                 <AppButton
                     key={action.code}
                     loading={props.submitting}
-                    disabled={props.submitting || (props.hasErrors && action.isSubmit)}
+                    disabled={props.submitting || (props.hasErrors && action.isSubmit) || props.readOnly}
                     link={ix > 0 || type === "link"}
                     {...action}
                 />

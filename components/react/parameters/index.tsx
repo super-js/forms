@@ -3,14 +3,20 @@ import cloneDeep from "lodash-es/cloneDeep";
 import {Skeleton} from "antd";
 
 import {ValidationResult, ValidationStatus} from "../../parameters/validator";
-import {IParameters} from "./Parameter";
+import {IParameter, IParameters} from "./Parameter";
 import {IParametersLayout, ParametersLayouts} from "./ParametersLayouts";
-
+import {Processing, EProcessingSize} from "@super-js/components/lib/processing";
+import ParametersCss from "./Parameters.css";
 
 export enum OnParametersChangeEventCode {
     PARAMS_VALUE_INPUT          = "PARAM_VALUE_INPUT",
     PARAMS_INIT                 = "PARAMS_INIT",
     PARAMS_VALIDATION_CHANGE    = "PARAMS_VALIDATION_CHANGE"
+}
+
+export interface IOnParametersChangeEventData {
+    parameter?: IParameter;
+    data?: any;
 }
 
 export interface OnParametersChangeInfo {
@@ -21,7 +27,7 @@ export interface OnParametersChangeInfo {
 }
 export type OnParametersChange      = (parametersChangeInfo: OnParametersChangeInfo) => void;
 export type TParameterDefinitions    = IParameters | (() => Promise<IParameters>);
-export type TParametersLayoutsDefinition = IParametersAndLayouts | (() => Promise<IParametersAndLayouts>);;
+export type TParametersLayoutsDefinition = IParametersAndLayouts | (() => Promise<IParametersAndLayouts>);
 
 export interface IParametersAndLayouts {
     parameters: IParameters;
@@ -29,6 +35,8 @@ export interface IParametersAndLayouts {
 }
 
 export interface ParametersProps {
+    loading?: boolean;
+    readOnly?: boolean;
     parameters?                 : IParameters,
     onParametersChange?         : OnParametersChange,
     layouts?                    : IParametersLayout[];
@@ -43,9 +51,10 @@ export interface ParametersState {
 }
 
 const ParametersContext    = React.createContext({
-    onParameterValueInput           : (parameterCode: string, value             : any)              => null,
+    onParameterValueInput           : (parameterCode: string, value: any, onInputData: any)              => null,
     onParameterValidationChange     : (parameterCode: string, validationResult  : ValidationResult) => null,
-    parameters                      : {}
+    parameters                      : {},
+    readOnly                        : false
 });
 
 
@@ -55,8 +64,8 @@ export class Parameters extends React.Component<ParametersProps, ParametersState
 
     state = {
         loadingParameters       : typeof this.props.parametersAndLayoutsLoader === "function",
-        parameters              : typeof this.props.parametersAndLayoutsLoader === "function" ? {} : cloneDeep(this.props.parameters),
-        layouts                 : typeof this.props.parametersAndLayoutsLoader === "function" ? [] : cloneDeep(this.props.layouts),
+        parameters              : {},
+        layouts                 : [],
         error                   : ""
     };
 
@@ -64,6 +73,8 @@ export class Parameters extends React.Component<ParametersProps, ParametersState
         return this.state.parameters !== nextState.parameters
             || (this.props.parameters !== nextProps.parameters && nextProps.parameters !== this.state.parameters)
             || this.state.loadingParameters !== nextState.loadingParameters
+            || this.props.loading !== nextProps.loading
+            || this.props.readOnly !== nextProps.readOnly
     }
 
     async componentDidMount() {
@@ -72,7 +83,7 @@ export class Parameters extends React.Component<ParametersProps, ParametersState
                 const {parameters = {}, layouts = []} = await this.props.parametersAndLayoutsLoader();
 
                 this.setState({
-                    parameters: parameters,
+                    parameters: this._normalizeParameters(parameters),
                     layouts: layouts,
                     loadingParameters : false
                 }, () =>  this.onParametersInit());
@@ -86,23 +97,51 @@ export class Parameters extends React.Component<ParametersProps, ParametersState
                 },() =>  this.onParametersInit())
             }
         } else {
-            this.onParametersInit();
+            this.setState({
+                parameters: this.props.parameters ? this._normalizeParameters(this.props.parameters) : {},
+                layouts: this.props.layouts || []
+            }, () => this.onParametersInit());
         }
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if(this.props.parameters !== prevProps.parameters) {
-            this.setState({
-                parameters: this.props.parameters
-            })
+
+        if(this.props.parameters !== prevProps.parameters && this.props.parameters !== this.state.parameters) {
+            this.setState(state => ({
+                parameters: this._normalizeParameters(this.props.parameters)
+            }))
         }
+        // else if(
+        //     (this.props.loading !== prevProps.loading)
+        //     || (this.props.readOnly !== prevProps.readOnly)
+        // ) {
+        //     this.setState(state => ({
+        //         parameters: this._normalizeParameters(state.parameters)
+        //     }))
+        // }
+
     }
 
-    _onParametersChange     = (eventCode: OnParametersChangeEventCode) => {
+    _normalizeParameters = (parameters: IParameters) => {
+
+        // const normalizedParameters = cloneDeep(parameters);
+        //
+        // if(this.props.loading || this.props.readOnly) {
+        //     Object.keys(normalizedParameters)
+        //         .forEach(parameterCode => {
+        //             normalizedParameters[parameterCode].readOnly = this.props.loading || this.props.readOnly;
+        //         })
+        // }
+
+        return parameters;
+    }
+
+    _onParametersChange     = (eventCode: OnParametersChangeEventCode, eventData: IOnParametersChangeEventData = {}) => {
+
+        const {parameter, data} = eventData;
+        const {parameters} = this.state;
+
         if(typeof this.props.onParametersChange === "function") {
-
-            const {parameters} = this.state;
-
             this.props.onParametersChange({
                 eventCode           : eventCode,
                 parameters          : parameters,
@@ -112,9 +151,19 @@ export class Parameters extends React.Component<ParametersProps, ParametersState
                         && parameters[parameterCode].validationResult.validateStatus === ValidationStatus.error)
             });
         }
+
+        if(parameter && typeof parameter.onChange === "function") {
+            parameter.onChange({
+                eventCode,
+                parameter: parameter,
+                parameters: parameters,
+                data
+            })
+        }
+
     };
 
-    onParameterValueInput   = (parameterCode, value) => {
+    onParameterValueInput   = (parameterCode, value, onInputData = {}) => {
         const {parameters} = this.state;
         if(parameters.hasOwnProperty(parameterCode)) {
 
@@ -125,7 +174,10 @@ export class Parameters extends React.Component<ParametersProps, ParametersState
 
                 this.setState({
                     parameters
-                }, () => this._onParametersChange(OnParametersChangeEventCode.PARAMS_VALUE_INPUT));
+                }, () => this._onParametersChange(OnParametersChangeEventCode.PARAMS_VALUE_INPUT, {
+                    data: onInputData,
+                    parameter: parameters[parameterCode]
+                }));
 
             }, 500);
         }
@@ -138,27 +190,40 @@ export class Parameters extends React.Component<ParametersProps, ParametersState
 
             this.setState({
                 parameters
-            }, () => this._onParametersChange(OnParametersChangeEventCode.PARAMS_VALIDATION_CHANGE));
+            }, () => this._onParametersChange(OnParametersChangeEventCode.PARAMS_VALIDATION_CHANGE, {
+                data: validationResult,
+                parameter: parameters[parameterCode]
+            }));
         }
     };
 
     onParametersInit = () => {
-        this._onParametersChange(OnParametersChangeEventCode.PARAMS_INIT);
+        this._onParametersChange(OnParametersChangeEventCode.PARAMS_INIT, {
+            data: {}
+        });
     }
 
     render() {
+
+        const {loading} = this.props;
+
         return this.state.loadingParameters ? (
             <Skeleton active />
         ) : (
             <ParametersContext.Provider value={{
                 onParameterValueInput           : this.onParameterValueInput,
                 onParameterValidationChange     : this.onParameterValidationChange,
-                parameters                      : this.state.parameters
+                parameters                      : this.state.parameters,
+                readOnly: this.props.loading || this.props.readOnly
             }}>
-                <ParametersLayouts
-                    layouts={this.state.layouts}
-                    parameters={this.state.parameters}
-                />
+                <div className={ParametersCss.parameters}>
+                    {loading ? <Processing size={EProcessingSize.LARGE} className={ParametersCss.processing} /> : null}
+                    <ParametersLayouts
+                        layouts={this.state.layouts}
+                        parameters={this.state.parameters}
+                        loading={loading}
+                    />
+                </div>
             </ParametersContext.Provider>
         )
     }
