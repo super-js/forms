@@ -37,14 +37,10 @@ const DateTime = (props: DateTimeProps) => {
             return [];
 
 
-        } else if (!Array.isArray(props.value)) {
-
-            const dateValue     = moment(props.value, dateTimeFormat);
-            return dateValue.isValid() ? dateValue : moment();
-
         } else {
 
-            return moment();
+            const dateValue = moment(props.value, dateTimeFormat);
+            return dateValue.isValid() ? dateValue : "";
 
         }
     };
