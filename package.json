@@ -12,27 +12,27 @@
     "css": "npx postcss components/**/*.css --base components --dir lib"
   },
   "devDependencies": {
-    "@super-js/components": "^0.0.10",
+    "@super-js/components": "*",
     "@types/classnames": "^2.2.11",
     "@types/lodash-es": "^4.17.4",
     "@types/owasp-password-strength-test": "^1.3.0",
-    "@types/react": "^17.0.0",
-    "@types/validator": "^13.1.2",
-    "antd": "^4.9.4",
+    "@types/react": "^17.0.1",
+    "@types/validator": "^13.1.3",
+    "antd": "^4.12.2",
     "classnames": "^2.2.6",
     "lodash-es": "^4.17.20",
-    "postcss": "^8.2.2",
+    "postcss": "^8.2.4",
     "postcss-cli": "^8.3.1",
     "postcss-preset-env": "^6.7.0",
     "react": "^17.0.1",
     "rimraf": "^3.0.2",
     "typescript": "^4.1.3",
-    "typescript-plugin-css-modules": "^3.0.1",
+    "typescript-plugin-css-modules": "^3.2.0",
     "validator": "^13.5.2"
   },
   "peerDependencies": {
-    "@super-js/components": "^0.0.10",
-    "antd": "^4.9.4",
+    "@super-js/components": "*",
+    "antd": "^4.12.2",
     "classnames": "^2.2.6",
     "lodash-es": "^4.17.20",
     "react": "^17.0.1",
@@ -64,6 +64,7 @@
   },
   "dependencies": {
     "array-move": "^3.0.1",
+    "google-libphonenumber": "^3.2.16",
     "owasp-password-strength-test": "^1.3.0",
     "react-sortable-hoc": "^1.11.0"
   }
