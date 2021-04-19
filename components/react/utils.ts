@@ -12,3 +12,12 @@ export function keyValuesToValidValues(keyValues: IKeyValue[]): IInputValidValue
             label: keyValue[Object.keys(keyValue)[0]]
         }))
 }
+
+export function arrayOfStringsToValidValues(validValues: string[]): IInputValidValue[] {
+    return validValues
+        .filter(validValue => typeof validValue === "string")
+        .map(validValue => ({
+            value: validValue,
+            label: validValue
+        }))
+}
