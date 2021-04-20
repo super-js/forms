@@ -30,6 +30,18 @@ export const useForm = (props: UseFormProps) => {
 
     const [loadingForm, setLoadingForm] = React.useState(typeof props.formDataLoader === "function");
 
+    const clearForm = () => {
+        setParameters(Object.keys(parameters).reduce((_, parameterCode) => {
+
+            _[parameterCode] = {
+                ...parameters[parameterCode],
+                value: ''
+            }
+
+            return _;
+        }, {}))
+    }
+
     React.useEffect(() => {
         (async () => {
             try {
@@ -47,6 +59,6 @@ export const useForm = (props: UseFormProps) => {
     }, [])
 
     return {
-        parameters, layouts, loadingForm, formData, error
+        parameters, setParameters, layouts, loadingForm, formData, error, clearForm
     }
 }

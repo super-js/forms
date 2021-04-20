@@ -20,13 +20,15 @@ export type InputTypeValue = IInputFileInfo | RcFile;
 
 export interface InputFileProps extends Omit<InputComponentProps, 'value'> {
     multiple?: boolean;
-    onClick?: (file: any) => any;
+    getDownloadBlob?: (file: any) => Promise<Blob>;
     value: InputTypeValue | InputTypeValue[];
+    acceptFileTypes?: string[];
+    onPreview?: (file: InputTypeValue | InputTypeValue[]) => any;
 }
 
 const InputFile = (props: InputFileProps) => {
 
-    const {onInput, value, multiple, onClick} = props;
+    const {onInput, value, multiple, getDownloadBlob, acceptFileTypes, onPreview, readOnly} = props;
 
     let fileList = [];
 
@@ -56,6 +58,28 @@ const InputFile = (props: InputFileProps) => {
         }
     }
 
+    const onDownload = async (file) => {
+        if(typeof getDownloadBlob === "function" || file instanceof File) {
+            const blob = file instanceof File ? file : await getDownloadBlob(file);
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+
+            const _onClickDownload = function (ev) {
+                setTimeout(() => {
+                    URL.revokeObjectURL(url);
+                    this.removeEventListener('click', _onClickDownload);
+                }, 150);
+            }
+
+            a.href = url;
+            a.download = (file.name || file.fileName) || 'download';
+            a.addEventListener('click', _onClickDownload, false);
+
+            a.click();
+
+        }
+    }
+
     return (
         <div>
             <Upload.Dragger
@@ -72,27 +96,35 @@ const InputFile = (props: InputFileProps) => {
                     ] : file);
                     return false;
                 }}
-                className={InputFileCss.wrapper}
-                disabled={props.readOnly}
+                className={cx(InputFileCss.wrapper, {
+                    [InputFileCss.readOnly]: readOnly
+                })}
+                disabled={readOnly}
+                accept={Array.isArray(acceptFileTypes) ? acceptFileTypes.join(',') : ''}
                 itemRender={(node, file) => {
                     return (
                         <div className={cx(InputFileCss.file, {
                             [InputFileCss.newFile]: file instanceof File,
                             [InputFileCss.toRemove]: (file as IInputFileInfo).toRemove
                         })}>
-                            {typeof onClick === "function" ? (
-                                <Typography.Link onClick={() => onClick(file)}>{file.fileName || file.name}</Typography.Link>
+                            {typeof getDownloadBlob === "function" ? (
+                                <Typography.Link onClick={() => onDownload(file)}>{file.fileName || file.name}</Typography.Link>
                             ) : (
                                 <Typography>{file.fileName || file.name}</Typography>
                             )}
-                            <Icon iconName="trash" clickable onClick={() => removeFile(file)} />
+                            <div>
+                                {typeof onPreview === "function" ? <Icon iconName="eye" clickable onClick={() => onPreview(value)} /> : null}
+                                <Icon iconName="trash" clickable onClick={() => removeFile(file)} />
+                            </div>
                         </div>
                     )
                 }}
             >
-                <div className={InputFileCss.content}>
-                    <Icon iconName="upload" />
-                </div>
+                {!readOnly ? (
+                    <div className={InputFileCss.content}>
+                        <Icon iconName="upload" />
+                    </div>
+                ) : null}
             </Upload.Dragger>
         </div>
     )
