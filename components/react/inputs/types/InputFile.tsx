@@ -114,7 +114,7 @@ const InputFile = (props: InputFileProps) => {
                             )}
                             <div>
                                 {typeof onPreview === "function" ? <Icon iconName="eye" clickable onClick={() => onPreview(value)} /> : null}
-                                <Icon iconName="trash" clickable onClick={() => removeFile(file)} />
+                                {!readOnly ? <Icon iconName="trash" clickable onClick={() => removeFile(file)} /> : null}
                             </div>
                         </div>
                     )
