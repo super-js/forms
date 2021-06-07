@@ -61,7 +61,7 @@ const InputFile = (props: InputFileProps) => {
     const onDownload = async (file) => {
         if(typeof getDownloadBlob === "function" || file instanceof File) {
             const blob = file instanceof File ? file : await getDownloadBlob(file);
-            const url = URL.createObjectURL(blob);
+            const url = URL.createObjectURL(blob instanceof Blob ? blob : new Blob([blob]));
             const a = document.createElement('a');
 
             const _onClickDownload = function (ev) {
