@@ -1,7 +1,7 @@
 import {IParameterType}                                     from "../index";
 import {defaultValidator, okStatus, errorStatus, ValidationStatus}              from '../validator';
 
-const MAX_FILE_SIZE = 20 * 1048576; //12 MB
+const MAX_FILE_SIZE = 50 * 1048576; //50 MB
 
 const password: IParameterType = {
     validate: defaultValidator(async (validationInfo) => {
